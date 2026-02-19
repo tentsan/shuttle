@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>マーク当てゲーム</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  text-align: center;
+  gap: 24px;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* Title Screen */
+#title-screen .game-title {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #e94560, #0f3460);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#title-screen .subtitle {
+  font-size: 1rem;
+  color: #888;
+  margin-top: -12px;
+}
+
+.btn {
+  padding: 16px 48px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+.btn:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #e94560, #c23152);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #16213e;
+  color: #eee;
+  border: 2px solid #0f3460;
+}
+
+/* Game Screen */
+#game-screen {
+  gap: 16px;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.timer-bar-container {
+  width: 100%;
+  height: 6px;
+  background: #16213e;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #e94560, #0f3460);
+  border-radius: 3px;
+  transition: width 0.1s linear;
+}
+
+.question-label {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.question-mark {
+  font-size: 5rem;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #16213e;
+  border-radius: 20px;
+  border: 3px solid #0f3460;
+}
+
+.choices {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  justify-content: center;
+}
+
+.choice-btn {
+  font-size: 3rem;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #16213e;
+  border: 3px solid #0f3460;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.2s, background 0.2s;
+}
+
+.choice-btn:active {
+  transform: scale(0.92);
+}
+
+.choice-btn.correct {
+  border-color: #4ecca3;
+  background: rgba(78, 204, 163, 0.2);
+}
+
+.choice-btn.wrong {
+  border-color: #e94560;
+  background: rgba(233, 69, 96, 0.2);
+}
+
+.feedback {
+  font-size: 1.5rem;
+  font-weight: 700;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feedback.correct-text {
+  color: #4ecca3;
+}
+
+.feedback.wrong-text {
+  color: #e94560;
+}
+
+/* Game Over Screen */
+#gameover-screen .result-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.final-score {
+  font-size: 4rem;
+  font-weight: 800;
+  color: #e94560;
+}
+
+.final-score-label {
+  font-size: 1rem;
+  color: #888;
+  margin-top: -16px;
+}
+
+.gameover-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.gameover-buttons .btn {
+  width: 100%;
+}
+
+.btn-share {
+  background: linear-gradient(135deg, #0f3460, #16213e);
+  color: #eee;
+  border: 2px solid #0f3460;
+}
+</style>
+</head>
+<body>
+
+<!-- Title Screen -->
+<div id="title-screen" class="screen active">
+  <div class="game-title">マーク当てゲーム</div>
+  <div class="subtitle">同じマークを見つけよう！（60秒）</div>
+  <button class="btn btn-primary" id="start-btn">スタート</button>
+</div>
+
+<!-- Game Screen -->
+<div id="game-screen" class="screen">
+  <div class="hud">
+    <span id="timer-text">60</span>
+    <span id="score-text">スコア: 0</span>
+  </div>
+  <div class="timer-bar-container">
+    <div class="timer-bar" id="timer-bar"></div>
+  </div>
+  <div class="question-label">この マーク と同じものは？</div>
+  <div class="question-mark" id="question-mark"></div>
+  <div class="choices" id="choices"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<!-- Game Over Screen -->
+<div id="gameover-screen" class="screen">
+  <div class="result-title">ゲームオーバー！</div>
+  <div class="final-score" id="final-score">0</div>
+  <div class="final-score-label">点</div>
+  <div class="gameover-buttons">
+    <button class="btn btn-share" id="share-btn">結果をシェア</button>
+    <button class="btn btn-primary" id="retry-btn">タイトルに戻る</button>
+  </div>
+</div>
+
+<script>
+const MARKS = [
+  '♠', '♣', '♥', '♦',
+  '★', '☆', '○', '●',
+  '□', '■', '△', '▲',
+  '◇', '◆', '♪', '♫',
+  '⚡', '🔥', '💧', '🌿',
+  '🍎', '🍊', '🍋', '🍇',
+  '🐱', '🐶', '🐰', '🐼',
+  '🌙', '☀', '⭐', '❄',
+];
+
+const GAME_DURATION = 60;
+
+let score = 0;
+let timeLeft = GAME_DURATION;
+let timerInterval = null;
+let canAnswer = true;
+
+const titleScreen = document.getElementById('title-screen');
+const gameScreen = document.getElementById('game-screen');
+const gameoverScreen = document.getElementById('gameover-screen');
+const startBtn = document.getElementById('start-btn');
+const timerText = document.getElementById('timer-text');
+const timerBar = document.getElementById('timer-bar');
+const scoreText = document.getElementById('score-text');
+const questionMark = document.getElementById('question-mark');
+const choicesContainer = document.getElementById('choices');
+const feedbackEl = document.getElementById('feedback');
+const finalScore = document.getElementById('final-score');
+const shareBtn = document.getElementById('share-btn');
+const retryBtn = document.getElementById('retry-btn');
+
+function showScreen(screen) {
+  titleScreen.classList.remove('active');
+  gameScreen.classList.remove('active');
+  gameoverScreen.classList.remove('active');
+  screen.classList.add('active');
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickRandom(arr, exclude) {
+  let item;
+  do {
+    item = arr[Math.floor(Math.random() * arr.length)];
+  } while (item === exclude);
+  return item;
+}
+
+function generateRound() {
+  canAnswer = true;
+  feedbackEl.textContent = '';
+  feedbackEl.className = 'feedback';
+
+  const correctMark = MARKS[Math.floor(Math.random() * MARKS.length)];
+  questionMark.textContent = correctMark;
+
+  const wrong1 = pickRandom(MARKS, correctMark);
+  let wrong2 = pickRandom(MARKS, correctMark);
+  while (wrong2 === wrong1) {
+    wrong2 = pickRandom(MARKS, correctMark);
+  }
+
+  const options = shuffle([correctMark, wrong1, wrong2]);
+
+  choicesContainer.innerHTML = '';
+  options.forEach(mark => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = mark;
+    btn.addEventListener('click', () => handleAnswer(btn, mark, correctMark));
+    choicesContainer.appendChild(btn);
+  });
+}
+
+function handleAnswer(btn, selected, correct) {
+  if (!canAnswer) return;
+  canAnswer = false;
+
+  const buttons = choicesContainer.querySelectorAll('.choice-btn');
+
+  if (selected === correct) {
+    score++;
+    scoreText.textContent = `スコア: ${score}`;
+    btn.classList.add('correct');
+    feedbackEl.textContent = '⭕ 正解！';
+    feedbackEl.className = 'feedback correct-text';
+  } else {
+    btn.classList.add('wrong');
+    buttons.forEach(b => {
+      if (b.textContent === correct) b.classList.add('correct');
+    });
+    feedbackEl.textContent = '❌ はずれ…';
+    feedbackEl.className = 'feedback wrong-text';
+  }
+
+  setTimeout(() => {
+    if (timeLeft > 0) {
+      generateRound();
+    }
+  }, 600);
+}
+
+function updateTimer() {
+  timeLeft--;
+  timerText.textContent = timeLeft;
+  timerBar.style.width = `${(timeLeft / GAME_DURATION) * 100}%`;
+
+  if (timeLeft <= 10) {
+    timerText.style.color = '#e94560';
+  }
+
+  if (timeLeft <= 0) {
+    clearInterval(timerInterval);
+    gameOver();
+  }
+}
+
+function startGame() {
+  score = 0;
+  timeLeft = GAME_DURATION;
+  scoreText.textContent = 'スコア: 0';
+  timerText.textContent = GAME_DURATION;
+  timerText.style.color = '#eee';
+  timerBar.style.width = '100%';
+
+  showScreen(gameScreen);
+  generateRound();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(updateTimer, 1000);
+}
+
+function gameOver() {
+  canAnswer = false;
+  finalScore.textContent = score;
+  showScreen(gameoverScreen);
+}
+
+function shareResult() {
+  const text = `🎯 マーク当てゲームで ${score} 点取りました！\n60秒でどれだけ正解できるかな？`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'マーク当てゲーム', text }).catch(() => {
+      fallbackShare(text);
+    });
+  } else {
+    fallbackShare(text);
+  }
+}
+
+function showCopied() {
+  shareBtn.textContent = 'コピーしました！';
+  setTimeout(() => { shareBtn.textContent = '結果をシェア'; }, 2000);
+}
+
+function legacyCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showCopied();
+}
+
+function fallbackShare(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(showCopied).catch(() => legacyCopy(text));
+  } else {
+    legacyCopy(text);
+  }
+}
+
+startBtn.addEventListener('click', startGame);
+shareBtn.addEventListener('click', shareResult);
+retryBtn.addEventListener('click', () => showScreen(titleScreen));
+</script>
+</body>
+</html>
