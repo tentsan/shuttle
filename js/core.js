@@ -119,6 +119,7 @@ var GameEngine = (function() {
   }
 
   function returnToTitle() {
+    customShareData = null;
     showScreen(els.titleScreen);
   }
 
@@ -157,11 +158,12 @@ var GameEngine = (function() {
     if (customShareData) {
       title = customShareData.title;
       text = customShareData.text;
-      customShareData = null;
-    } else {
+    } else if (activeGameId && games[activeGameId]) {
       var game = games[activeGameId];
       text = game.getShareText(score);
       title = game.name;
+    } else {
+      return;
     }
 
     if (navigator.share) {
