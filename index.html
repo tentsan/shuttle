@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>マーク当てゲーム</title>
+<title>ミニゲーム</title>
 <style>
 * {
   margin: 0;
@@ -40,8 +40,8 @@ body {
   display: flex;
 }
 
-/* Title Screen */
-#title-screen .game-title {
+/* ===== Title Screen ===== */
+.game-title {
   font-size: 2rem;
   font-weight: 800;
   background: linear-gradient(135deg, #e94560, #0f3460);
@@ -50,12 +50,58 @@ body {
   background-clip: text;
 }
 
-#title-screen .subtitle {
+.subtitle {
   font-size: 1rem;
   color: #888;
   margin-top: -12px;
 }
 
+#game-select-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.game-select-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #16213e;
+  border: 2px solid #0f3460;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.2s;
+  text-align: left;
+}
+
+.game-select-btn:active {
+  transform: scale(0.97);
+  border-color: #e94560;
+}
+
+.game-icon {
+  font-size: 2rem;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #eee;
+}
+
+.game-desc {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+/* ===== Shared Buttons ===== */
 .btn {
   padding: 16px 48px;
   border: none;
@@ -76,13 +122,13 @@ body {
   color: #fff;
 }
 
-.btn-secondary {
-  background: #16213e;
+.btn-share {
+  background: linear-gradient(135deg, #0f3460, #16213e);
   color: #eee;
   border: 2px solid #0f3460;
 }
 
-/* Game Screen */
+/* ===== Game Screen HUD ===== */
 #game-screen {
   gap: 16px;
 }
@@ -111,6 +157,62 @@ body {
   transition: width 0.1s linear;
 }
 
+#game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* ===== Shared Feedback ===== */
+.feedback {
+  font-size: 1.5rem;
+  font-weight: 700;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feedback.correct-text {
+  color: #4ecca3;
+}
+
+.feedback.wrong-text {
+  color: #e94560;
+}
+
+/* ===== Game Over Screen ===== */
+#gameover-screen .result-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.final-score {
+  font-size: 4rem;
+  font-weight: 800;
+  color: #e94560;
+}
+
+.final-score-label {
+  font-size: 1rem;
+  color: #888;
+  margin-top: -16px;
+}
+
+.gameover-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.gameover-buttons .btn {
+  width: 100%;
+}
+
+/* ===== Mark Game ===== */
 .question-label {
   font-size: 0.9rem;
   color: #888;
@@ -163,56 +265,65 @@ body {
   background: rgba(233, 69, 96, 0.2);
 }
 
-.feedback {
-  font-size: 1.5rem;
+/* ===== Math Game ===== */
+.math-expression {
+  font-size: 2.5rem;
+  font-weight: 800;
+  padding: 16px 24px;
+  background: #16213e;
+  border-radius: 16px;
+  border: 3px solid #0f3460;
+}
+
+.math-input-display {
+  font-size: 2rem;
   font-weight: 700;
-  height: 40px;
+  min-height: 50px;
+  padding: 8px 16px;
+  background: #0a0a1a;
+  border: 2px solid #0f3460;
+  border-radius: 8px;
+  min-width: 120px;
+  color: #eee;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: border-color 0.2s, background 0.2s;
 }
 
-.feedback.correct-text {
-  color: #4ecca3;
-}
-
-.feedback.wrong-text {
-  color: #e94560;
-}
-
-/* Game Over Screen */
-#gameover-screen .result-title {
-  font-size: 1.8rem;
-  font-weight: 800;
-}
-
-.final-score {
-  font-size: 4rem;
-  font-weight: 800;
-  color: #e94560;
-}
-
-.final-score-label {
-  font-size: 1rem;
-  color: #888;
-  margin-top: -16px;
-}
-
-.gameover-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
   width: 100%;
+  max-width: 280px;
 }
 
-.gameover-buttons .btn {
-  width: 100%;
-}
-
-.btn-share {
-  background: linear-gradient(135deg, #0f3460, #16213e);
-  color: #eee;
+.numpad-btn {
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 14px;
+  background: #16213e;
   border: 2px solid #0f3460;
+  border-radius: 12px;
+  color: #eee;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.numpad-btn:active {
+  transform: scale(0.92);
+}
+
+.numpad-btn.ok-btn {
+  background: linear-gradient(135deg, #4ecca3, #38b28a);
+  border-color: #4ecca3;
+  color: #fff;
+}
+
+.numpad-btn.back-btn {
+  background: #2a1a3e;
+  border-color: #5a3e7e;
 }
 </style>
 </head>
@@ -220,9 +331,9 @@ body {
 
 <!-- Title Screen -->
 <div id="title-screen" class="screen active">
-  <div class="game-title">マーク当てゲーム</div>
-  <div class="subtitle">同じマークを見つけよう！（60秒）</div>
-  <button class="btn btn-primary" id="start-btn">スタート</button>
+  <div class="game-title">ミニゲーム</div>
+  <div class="subtitle">ゲームを選んでね！（60秒）</div>
+  <div id="game-select-buttons"></div>
 </div>
 
 <!-- Game Screen -->
@@ -234,9 +345,7 @@ body {
   <div class="timer-bar-container">
     <div class="timer-bar" id="timer-bar"></div>
   </div>
-  <div class="question-label">この マーク と同じものは？</div>
-  <div class="question-mark" id="question-mark"></div>
-  <div class="choices" id="choices"></div>
+  <div id="game-container"></div>
   <div class="feedback" id="feedback"></div>
 </div>
 
@@ -251,190 +360,8 @@ body {
   </div>
 </div>
 
-<script>
-const MARKS = [
-  '♠', '♣', '♥', '♦',
-  '★', '☆', '○', '●',
-  '□', '■', '△', '▲',
-  '◇', '◆', '♪', '♫',
-  '⚡', '🔥', '💧', '🌿',
-  '🍎', '🍊', '🍋', '🍇',
-  '🐱', '🐶', '🐰', '🐼',
-  '🌙', '☀', '⭐', '❄',
-];
-
-const GAME_DURATION = 60;
-
-let score = 0;
-let timeLeft = GAME_DURATION;
-let timerInterval = null;
-let canAnswer = true;
-
-const titleScreen = document.getElementById('title-screen');
-const gameScreen = document.getElementById('game-screen');
-const gameoverScreen = document.getElementById('gameover-screen');
-const startBtn = document.getElementById('start-btn');
-const timerText = document.getElementById('timer-text');
-const timerBar = document.getElementById('timer-bar');
-const scoreText = document.getElementById('score-text');
-const questionMark = document.getElementById('question-mark');
-const choicesContainer = document.getElementById('choices');
-const feedbackEl = document.getElementById('feedback');
-const finalScore = document.getElementById('final-score');
-const shareBtn = document.getElementById('share-btn');
-const retryBtn = document.getElementById('retry-btn');
-
-function showScreen(screen) {
-  titleScreen.classList.remove('active');
-  gameScreen.classList.remove('active');
-  gameoverScreen.classList.remove('active');
-  screen.classList.add('active');
-}
-
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function pickRandom(arr, exclude) {
-  let item;
-  do {
-    item = arr[Math.floor(Math.random() * arr.length)];
-  } while (item === exclude);
-  return item;
-}
-
-function generateRound() {
-  canAnswer = true;
-  feedbackEl.textContent = '';
-  feedbackEl.className = 'feedback';
-
-  const correctMark = MARKS[Math.floor(Math.random() * MARKS.length)];
-  questionMark.textContent = correctMark;
-
-  const wrong1 = pickRandom(MARKS, correctMark);
-  let wrong2 = pickRandom(MARKS, correctMark);
-  while (wrong2 === wrong1) {
-    wrong2 = pickRandom(MARKS, correctMark);
-  }
-
-  const options = shuffle([correctMark, wrong1, wrong2]);
-
-  choicesContainer.innerHTML = '';
-  options.forEach(mark => {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.textContent = mark;
-    btn.addEventListener('click', () => handleAnswer(btn, mark, correctMark));
-    choicesContainer.appendChild(btn);
-  });
-}
-
-function handleAnswer(btn, selected, correct) {
-  if (!canAnswer) return;
-  canAnswer = false;
-
-  const buttons = choicesContainer.querySelectorAll('.choice-btn');
-
-  if (selected === correct) {
-    score++;
-    scoreText.textContent = `スコア: ${score}`;
-    btn.classList.add('correct');
-    feedbackEl.textContent = '⭕ 正解！';
-    feedbackEl.className = 'feedback correct-text';
-  } else {
-    btn.classList.add('wrong');
-    buttons.forEach(b => {
-      if (b.textContent === correct) b.classList.add('correct');
-    });
-    feedbackEl.textContent = '❌ はずれ…';
-    feedbackEl.className = 'feedback wrong-text';
-  }
-
-  setTimeout(() => {
-    if (timeLeft > 0) {
-      generateRound();
-    }
-  }, 600);
-}
-
-function updateTimer() {
-  timeLeft--;
-  timerText.textContent = timeLeft;
-  timerBar.style.width = `${(timeLeft / GAME_DURATION) * 100}%`;
-
-  if (timeLeft <= 10) {
-    timerText.style.color = '#e94560';
-  }
-
-  if (timeLeft <= 0) {
-    clearInterval(timerInterval);
-    gameOver();
-  }
-}
-
-function startGame() {
-  score = 0;
-  timeLeft = GAME_DURATION;
-  scoreText.textContent = 'スコア: 0';
-  timerText.textContent = GAME_DURATION;
-  timerText.style.color = '#eee';
-  timerBar.style.width = '100%';
-
-  showScreen(gameScreen);
-  generateRound();
-  clearInterval(timerInterval);
-  timerInterval = setInterval(updateTimer, 1000);
-}
-
-function gameOver() {
-  canAnswer = false;
-  finalScore.textContent = score;
-  showScreen(gameoverScreen);
-}
-
-function shareResult() {
-  const text = `🎯 マーク当てゲームで ${score} 点取りました！\n60秒でどれだけ正解できるかな？`;
-
-  if (navigator.share) {
-    navigator.share({ title: 'マーク当てゲーム', text }).catch(() => {
-      fallbackShare(text);
-    });
-  } else {
-    fallbackShare(text);
-  }
-}
-
-function showCopied() {
-  shareBtn.textContent = 'コピーしました！';
-  setTimeout(() => { shareBtn.textContent = '結果をシェア'; }, 2000);
-}
-
-function legacyCopy(text) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  document.body.appendChild(ta);
-  ta.select();
-  document.execCommand('copy');
-  document.body.removeChild(ta);
-  showCopied();
-}
-
-function fallbackShare(text) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(showCopied).catch(() => legacyCopy(text));
-  } else {
-    legacyCopy(text);
-  }
-}
-
-startBtn.addEventListener('click', startGame);
-shareBtn.addEventListener('click', shareResult);
-retryBtn.addEventListener('click', () => showScreen(titleScreen));
-</script>
+<script src="js/core.js"></script>
+<script src="js/game-mark.js"></script>
+<script src="js/game-math.js"></script>
 </body>
 </html>
