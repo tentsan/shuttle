@@ -387,6 +387,7 @@ function startGame() {
 
   showScreen(gameScreen);
   generateRound();
+  clearInterval(timerInterval);
   timerInterval = setInterval(updateTimer, 1000);
 }
 
