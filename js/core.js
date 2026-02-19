@@ -9,10 +9,15 @@ var GameEngine = (function() {
 
   var els = {};
 
+  var customScreens = [];
+
   function showScreen(screen) {
     els.titleScreen.classList.remove('active');
     els.gameScreen.classList.remove('active');
     els.gameoverScreen.classList.remove('active');
+    for (var i = 0; i < customScreens.length; i++) {
+      customScreens[i].classList.remove('active');
+    }
     screen.classList.add('active');
   }
 
@@ -76,7 +81,12 @@ var GameEngine = (function() {
 
   function selectGame(gameId) {
     activeGameId = gameId;
-    startSession();
+    var game = games[gameId];
+    if (game.selfManaged && game.startGame) {
+      game.startGame();
+    } else {
+      startSession();
+    }
   }
 
   function startSession() {
@@ -99,11 +109,17 @@ var GameEngine = (function() {
     if (games[activeGameId] && games[activeGameId].cleanup) {
       games[activeGameId].cleanup();
     }
+    var titleEl = els.gameoverScreen.querySelector('.result-title');
+    var labelEl = els.gameoverScreen.querySelector('.final-score-label');
+    if (titleEl) titleEl.textContent = '\u30b2\u30fc\u30e0\u30aa\u30fc\u30d0\u30fc\uff01';
     els.finalScore.textContent = score;
+    if (labelEl) labelEl.textContent = '\u70b9';
+    customShareData = null;
     showScreen(els.gameoverScreen);
   }
 
   function returnToTitle() {
+    customShareData = null;
     showScreen(els.titleScreen);
   }
 
@@ -135,12 +151,23 @@ var GameEngine = (function() {
     }
   }
 
+  var customShareData = null;
+
   function shareResult() {
-    var game = games[activeGameId];
-    var text = game.getShareText(score);
+    var title, text;
+    if (customShareData) {
+      title = customShareData.title;
+      text = customShareData.text;
+    } else if (activeGameId && games[activeGameId]) {
+      var game = games[activeGameId];
+      text = game.getShareText(score);
+      title = game.name;
+    } else {
+      return;
+    }
 
     if (navigator.share) {
-      navigator.share({ title: game.name, text: text }).catch(function() {
+      navigator.share({ title: title, text: text }).catch(function() {
         fallbackShare(text);
       });
     } else {
@@ -199,6 +226,22 @@ var GameEngine = (function() {
       if (els.gameSelectButtons) {
         buildTitleScreen();
       }
+    },
+    registerScreen: function(screenEl) {
+      customScreens.push(screenEl);
+    },
+    showScreen: function(screen) {
+      showScreen(screen);
+    },
+    showGameOver: function(title, scoreText, scoreLabel, shareTitle, shareText) {
+      activeGameId = null;
+      var titleEl = els.gameoverScreen.querySelector('.result-title');
+      var labelEl = els.gameoverScreen.querySelector('.final-score-label');
+      if (titleEl) titleEl.textContent = title;
+      els.finalScore.textContent = scoreText;
+      if (labelEl) labelEl.textContent = scoreLabel;
+      customShareData = { title: shareTitle, text: shareText };
+      showScreen(els.gameoverScreen);
     },
     getGames: function() { return games; },
     getScore: function() { return score; }

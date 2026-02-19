@@ -20,11 +20,9 @@
   }
 
   function pickRandom(arr, exclude) {
-    var item;
-    do {
-      item = arr[Math.floor(Math.random() * arr.length)];
-    } while (item === exclude);
-    return item;
+    var candidates = arr.filter(function(x) { return x !== exclude; });
+    if (candidates.length === 0) return arr[0];
+    return candidates[Math.floor(Math.random() * candidates.length)];
   }
 
   GameEngine.registerGame({
