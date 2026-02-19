@@ -325,6 +325,69 @@ body {
   background: #2a1a3e;
   border-color: #5a3e7e;
 }
+
+/* ===== Speed 25 Game ===== */
+#speed25-screen {
+  gap: 12px;
+}
+
+.speed25-hud {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.speed25-next-label {
+  font-size: 0.95rem;
+  color: #888;
+}
+
+.speed25-next-num {
+  color: #e94560;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.speed25-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.speed25-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #16213e;
+  border: 2px solid #0f3460;
+  border-radius: 12px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.15s, background 0.15s, opacity 0.2s;
+}
+
+.speed25-cell:active {
+  transform: scale(0.9);
+}
+
+.speed25-cell.cleared {
+  background: rgba(78, 204, 163, 0.15);
+  border-color: #4ecca3;
+  color: #4ecca3;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.speed25-cell.wrong-tap {
+  border-color: #e94560;
+  background: rgba(233, 69, 96, 0.2);
+}
 </style>
 </head>
 <body>
@@ -349,6 +412,16 @@ body {
   <div class="feedback" id="feedback"></div>
 </div>
 
+<!-- Speed 25 Game Screen -->
+<div id="speed25-screen" class="screen">
+  <div class="speed25-hud">
+    <span id="speed25-timer">⏱ 0.00秒</span>
+    <span id="speed25-progress">0 / 25</span>
+  </div>
+  <div class="speed25-next-label">次は <span class="speed25-next-num" id="speed25-next">1</span> をタップ！</div>
+  <div class="speed25-grid" id="speed25-grid"></div>
+</div>
+
 <!-- Game Over Screen -->
 <div id="gameover-screen" class="screen">
   <div class="result-title">ゲームオーバー！</div>
@@ -363,5 +436,6 @@ body {
 <script src="js/core.js"></script>
 <script src="js/game-mark.js"></script>
 <script src="js/game-math.js"></script>
+<script src="js/game-speed25.js"></script>
 </body>
 </html>
