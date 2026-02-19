@@ -409,21 +409,26 @@ function shareResult() {
   }
 }
 
+function showCopied() {
+  shareBtn.textContent = 'コピーしました！';
+  setTimeout(() => { shareBtn.textContent = '結果をシェア'; }, 2000);
+}
+
+function legacyCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showCopied();
+}
+
 function fallbackShare(text) {
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(() => {
-      shareBtn.textContent = 'コピーしました！';
-      setTimeout(() => { shareBtn.textContent = '結果をシェア'; }, 2000);
-    });
+    navigator.clipboard.writeText(text).then(showCopied).catch(() => legacyCopy(text));
   } else {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    shareBtn.textContent = 'コピーしました！';
-    setTimeout(() => { shareBtn.textContent = '結果をシェア'; }, 2000);
+    legacyCopy(text);
   }
 }
 
